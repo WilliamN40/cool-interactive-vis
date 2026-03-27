@@ -4,7 +4,6 @@ const els = {
   dataSourceLabel: document.getElementById("dataSourceLabel"),
   provinceSelect: document.getElementById("provinceSelect"),
   violationSelect: document.getElementById("violationSelect"),
-  timeOfDaySelect: document.getElementById("timeOfDaySelect"),
   colorBySelect: document.getElementById("colorBySelect"),
   resetBtn: document.getElementById("resetBtn"),
   streetName: document.getElementById("streetName"),
@@ -34,7 +33,6 @@ let violationsAll = [];
 const state = {
   provinceGroup: "ON",
   violation: "All",
-  timeOfDay: "All",
   colorBy: "Violation", // "Violation" | "AvgFine"
 
   streetSelected: null,
@@ -84,19 +82,12 @@ function idxStreetTotal(prov, street) {
   return `${prov}|${street}`;
 }
 
-function getAllowedHours() {
-  const timeBuckets = new Map(dataset.timeBuckets.map((b) => [b.name, b.hours]));
-  const allowed = timeBuckets.get(state.timeOfDay) ?? hourDomain;
-  return new Set(allowed);
-}
-
 function getHourSet() {
-  const allowed = getAllowedHours();
   const minH = clamp(Math.min(state.brushMinHour, state.brushMaxHour), 0, 23);
   const maxH = clamp(Math.max(state.brushMinHour, state.brushMaxHour), 0, 23);
   const hourSet = [];
   for (let h = minH; h <= maxH; h++) {
-    if (allowed.has(h)) hourSet.push(h);
+    hourSet.push(h);
   }
   return hourSet;
 }
@@ -226,11 +217,6 @@ function setupControls() {
     .map((v) => `<option value="${v}">${abbreviateViolation(v)}</option>`)
     .join("");
   els.violationSelect.value = state.violation;
-
-  els.timeOfDaySelect.innerHTML = dataset.timeBuckets
-    .map((b) => `<option value="${b.name}">${b.name}</option>`)
-    .join("");
-  els.timeOfDaySelect.value = state.timeOfDay;
 
   els.colorBySelect.innerHTML = [
     `<option value="Violation">Violation</option>`,
@@ -664,7 +650,6 @@ function updateDetails() {
 function resetState() {
   state.provinceGroup = "ON";
   state.violation = "All";
-  state.timeOfDay = "All";
   state.colorBy = "Violation";
   state.streetSelected = null;
   state.brushMinHour = 0;
@@ -672,7 +657,6 @@ function resetState() {
 
   els.provinceSelect.value = state.provinceGroup;
   els.violationSelect.value = state.violation;
-  els.timeOfDaySelect.value = state.timeOfDay;
   els.colorBySelect.value = state.colorBy;
 }
 
@@ -685,20 +669,6 @@ function setupListeners() {
   els.violationSelect.addEventListener("change", () => {
     state.violation = els.violationSelect.value;
     updatePointerHints();
-    render();
-  });
-  els.timeOfDaySelect.addEventListener("change", () => {
-    state.timeOfDay = els.timeOfDaySelect.value;
-    // If current brush range yields no selected hours, expand brush to full range.
-    const allowed = getAllowedHours();
-    const h0 = Math.min(state.brushMinHour, state.brushMaxHour);
-    const h1 = Math.max(state.brushMinHour, state.brushMaxHour);
-    let any = false;
-    for (let h = h0; h <= h1; h++) if (allowed.has(h)) any = true;
-    if (!any) {
-      state.brushMinHour = 0;
-      state.brushMaxHour = 23;
-    }
     render();
   });
   els.colorBySelect.addEventListener("change", () => {
