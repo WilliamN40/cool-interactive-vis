@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Parking Pressure in Toronto</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div class="title-block">
+        <h1>Parking Pressure in Toronto</h1>
+        <p class="subtitle">
+          Explore where and when parking tickets cluster, and what violation types dominate.
+        </p>
+      </div>
+      <div class="meta-block">
+        <div><strong>Data:</strong> <span id="dataSourceLabel">parking-tickets-2024 (course dataset)</span></div>
+        <div><strong>Interaction:</strong> hover, click, filters, and brushing</div>
+      </div>
+    </header>
+
+    <main id="app" class="layout">
+      <aside class="panel" id="filtersPanel">
+        <h2>Filters</h2>
+
+        <button id="resetBtn" class="btn btn-secondary">Reset View</button>
+
+        <label class="field">
+          <span class="field-label">Province Group</span>
+          <select id="provinceSelect"></select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Violation Type</span>
+          <select id="violationSelect"></select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Time of Day</span>
+          <select id="timeOfDaySelect"></select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Color By</span>
+          <select id="colorBySelect"></select>
+        </label>
+
+        <div class="tip">
+          Tip: drag across the time chart to choose an hour range, then click a street bubble.
+        </div>
+      </aside>
+
+      <section class="panel main-panel">
+        <div class="top-grid">
+          <div class="left-stack">
+            <section class="view-block">
+              <div class="view-header">
+                <h2>Ticket Hotspot Map</h2>
+                <div class="hint" id="mapHint">Hover for details • Click to link</div>
+              </div>
+              <div class="svg-wrap">
+                <svg id="mapSvg" class="chart" role="img" aria-label="Ticket hotspot map (force layout)"></svg>
+              </div>
+            </section>
+
+            <section class="view-block bottom-grid">
+              <div class="view-header">
+                <h2>Top Violations</h2>
+                <div class="hint" id="violHint">Updates with filters + linked selection</div>
+              </div>
+              <div class="svg-wrap">
+                <svg id="violSvg" class="chart" role="img" aria-label="Top violations chart"></svg>
+              </div>
+            </section>
+          </div>
+
+          <div class="side-stack">
+            <section class="view-block">
+              <div class="view-header">
+                <h2>Time Pattern</h2>
+                <div class="hint" id="timeHint">Brush to select hours</div>
+              </div>
+              <div class="svg-wrap">
+                <svg id="timeSvg" class="chart" role="img" aria-label="Time pattern chart"></svg>
+              </div>
+            </section>
+
+            <section class="details" id="detailsPanel">
+              <div class="view-header">
+                <h2>Street Details</h2>
+              </div>
+              <div class="details-grid">
+                <div><span class="k">Selected Street:</span> <span class="v" id="streetName">None</span></div>
+                <div><span class="k">Tickets (current selection):</span> <span class="v" id="streetTickets">—</span></div>
+                <div><span class="k">Most Common Violation:</span> <span class="v" id="streetTopViolation">—</span></div>
+                <div><span class="k">Avg Fine (current selection):</span> <span class="v" id="streetAvgFine">—</span></div>
+              </div>
+              <div class="sources">
+                <strong>Sources:</strong>
+                <a href="https://open.toronto.ca/dataset/parking-tickets/" target="_blank" rel="noopener noreferrer">City of Toronto Parking Tickets dataset</a>;
+                <a href="https://d3js.org/" target="_blank" rel="noopener noreferrer">D3.js</a>.
+                Aggregated from local CSV files in <code>parking-tickets-2024/</code>.
+              </div>
+            </section>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="src/main.js"></script>
+  </body>
+</html>
+
